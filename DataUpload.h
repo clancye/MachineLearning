@@ -14,12 +14,25 @@
 class DataUploader {
 
     public:
-
+    ///Class constructor
     DataUploader();
-
     ///uploads data into vector format
-    void uploadData(int numberOfClasses, int numberOfFeatures, std::string pathToData);
+    void uploadData(std::string pathToData);
 
+    ///Sets the number of classes
+    void setNumberOfClasses(int theNumberOfClasses);
+    ///Sets the number of features (i.e. the length of a feature vector)
+    void setNumberOfFeatures(int theNumberOfFeatures);
+    ///Sets the number of samples (i.e. the number of feature vectors)
+    void setNumberOfSamples(int theNumberOfSamples);
+
+    ///Calls the setters in batch
+    void setParameters(int theNumberOfClasses, int theNumberOfFeatures, int theNumberOfSamples);
+
+    private:
+
+    Eigen::MatrixXd dataMatrix;
+    int numberOfClasses,numberOfFeatures,numberOfSamples;
 };
 
 

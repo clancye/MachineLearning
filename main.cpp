@@ -5,8 +5,13 @@
 int main() {
     std::cout << "Hello, World!" << std::endl;
     DataUploader uploader;
+    int numberOfClasses,numberOfFeatures,numberOfSamples;
+    numberOfClasses = 3;
+    numberOfFeatures = 4;
+    numberOfSamples = 27;
 
-    uploader.uploadData(1,2,"/Users/clancyemanuel/Desktop/iris.txt");
+    uploader.setParameters(numberOfClasses, numberOfFeatures, numberOfSamples);
+    uploader.uploadData("/Users/clancyemanuel/Desktop/iris.txt");
 
     return 0;
 }
