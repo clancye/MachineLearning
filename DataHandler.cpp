@@ -24,6 +24,8 @@ Eigen::MatrixXd* DataHandler::getDataMatrix() {
     return &dataMatrix;
 }
 
+
+
 Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
     std::ifstream file;
     file.open(pathToData);
@@ -62,9 +64,9 @@ Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
         std::getline(file, currentLine);//read in one line from the file containing the data
         i++;
     }
-    //std::cout << augmentedDataMatrix.leftCols(210) << std::endl;//print the matrix for debugging and stuff
+    std::cout << augmentedDataMatrix.leftCols(210) << std::endl;//print the matrix for debugging and stuff
     dataMatrix = augmentedDataMatrix.topRows(numberOfFeatures);
-    std::cout<<dataMatrix<<std::endl;
+    //std::cout<<dataMatrix<<std::endl;
     file.close();//close the file once it's all done
 }
 
@@ -76,17 +78,18 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
     std::getline(file, currentLine);
     if(currentLine.compare("Class names:")==0) {
         std::getline(file,currentLine);
-        int j = 1;
+        int j = 0;//class enumeration starts at 0
         while(currentLine.compare("stop here")!=0){
             if(currentLine.compare(previousLine)==0){
                 std::cout<<"Infinite loop canceled in CLASS NAMES - use 'stop here' after every section.";
                 break;
             }
-            classes[currentLine]=j;
+            classes[currentLine]=j;//starts at one to
             j++;
             previousLine = currentLine;
             std::getline(file,currentLine);
         }
+        numberOfClasses = j;
         std::getline(file,currentLine);
     }
     else{std::cout<<"Error retrieving class names. First line of configuration file should be 'Class names:'";}
@@ -136,4 +139,16 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
     }
     else{ std::cout<<"Error retrieving class index. See config file example for help.";}
     file.close();
+}
+
+void DataHandler::calculateMeanVectors() {
+    Eigen::MatrixXd zeroVector = Eigen::MatrixXd::Zero(numberOfFeatures,1);
+    int classValue, classCounter[numberOfClasses];
+    for(int i = 0; i<numberOfClasses;i++) meanVectors.push_back(zeroVector);
+    for(int i = 0;i<numberOfSamples;i++) {
+        classValue = augmentedDataMatrix(numberOfFeatures, i);
+        meanVectors[classValue] += dataMatrix.col(i);
+        classCounter[classValue]++;
+    }
+    for(int i = 0;i<numberOfClasses;i++){ std::cout<<meanVectors[i]<<std::endl;}
 }

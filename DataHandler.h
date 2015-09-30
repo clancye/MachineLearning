@@ -9,7 +9,9 @@
 #include<iostream>
 #include<fstream>
 #include<map>
+#include<vector>
 #include "/usr/local/include/eigen3/Eigen/Eigen"
+
 
 ///Uploads data into vector format and indicates parameter values
 class DataHandler {
@@ -20,15 +22,18 @@ class DataHandler {
     ///uploads data into vector format
     void uploadData(std::string pathToData);
     void getConfigurationDetails(std::string pathToConfigFile);
+    void calculateMeanVectors();
     Eigen::MatrixXd* getDataMatrix();
+    Eigen::MatrixXd* getClassAssignments();
 
 
     private:
 
     std::map<std::string,int> classes;
-    Eigen::MatrixXd dataMatrix, augmentedDataMatrix;
+    std::vector<Eigen::VectorXd> meanVectors;
+    Eigen::MatrixXd dataMatrix, augmentedDataMatrix,classAssignments;
     Eigen::MatrixXd loadDataMatrix(std::string pathToData);
-    int numberOfFeatures,numberOfSamples, classIndexIsFirst;
+    int numberOfFeatures,numberOfSamples, classIndexIsFirst, numberOfClasses;
 };
 
 
