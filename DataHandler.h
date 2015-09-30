@@ -8,6 +8,7 @@
 #include <string>
 #include<iostream>
 #include<fstream>
+#include<map>
 #include "/usr/local/include/eigen3/Eigen/Eigen"
 
 ///Uploads data into vector format and indicates parameter values
@@ -17,27 +18,17 @@ class DataHandler {
     ///Class constructor
     DataHandler();
     ///uploads data into vector format
-    void getAugmentedDataMatrix(std::string pathToData);
+    void uploadData(std::string pathToData);
     void getConfigurationDetails(std::string pathToConfigFile);
     Eigen::MatrixXd* getDataMatrix();
 
-    ///Sets the number of classes
-    void setNumberOfClasses(int theNumberOfClasses);
-    ///Sets the number of features (i.e. the length of a feature vector)
-    void setNumberOfFeatures(int theNumberOfFeatures);
-    ///Sets the number of samples (i.e. the number of feature vectors)
-    void setNumberOfSamples(int theNumberOfSamples);
-
-    ///Calls the setters in batch
-    void setParameters(int theNumberOfClasses, int theNumberOfFeatures, int theNumberOfSamples, std::string classIndex);
 
     private:
-    ///Takes the class value as given in the data and converts to a number in case it is originally a string
-    int assignClassNumber(std::string classValue);//returns an int based on class rule
 
+    std::map<std::string,int> classes;
     Eigen::MatrixXd dataMatrix;
-    int numberOfClasses,numberOfFeatures,numberOfSamples, classIndexIsFirst;//if classIndex == last, classIndexBinary = 1
-
+    Eigen::MatrixXd loadDataMatrix(std::string pathToData);
+    int numberOfFeatures,numberOfSamples, classIndexIsFirst;
 };
 
 

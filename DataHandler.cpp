@@ -9,7 +9,21 @@ DataHandler::DataHandler() {
 }
 
 
-void DataHandler::getAugmentedDataMatrix(std::string pathToData) {
+
+
+void DataHandler::uploadData(std::string pathToData) {
+    std::string pathToConfigFile;
+    pathToConfigFile = pathToData;
+    pathToConfigFile.insert(pathToConfigFile.length()-4,"Config");
+    getConfigurationDetails(pathToConfigFile);//sets general parameters
+    loadDataMatrix(pathToData);
+}
+
+Eigen::MatrixXd* DataHandler::getDataMatrix() {
+    return &dataMatrix;
+}
+
+Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
     std::ifstream file;
     file.open(pathToData);
     std::string delimeter = ",";
@@ -17,8 +31,9 @@ void DataHandler::getAugmentedDataMatrix(std::string pathToData) {
     std::string token;
     std::string currentLine;
 
-    dataMatrix.resize(numberOfFeatures + 1, numberOfSamples);//+1 because we need the last variable to be the class
-    Eigen::VectorXd temporaryDataVector(numberOfFeatures + 1);//see above comment for resizing data matrix
+    dataMatrix.resize(numberOfFeatures+1,numberOfSamples);
+    Eigen::VectorXd temporaryDataVector;
+    temporaryDataVector.resize(numberOfFeatures+1);
 
     std::getline(file, currentLine);//read in one line from the file containing the data
     int i = 0;
@@ -26,53 +41,90 @@ void DataHandler::getAugmentedDataMatrix(std::string pathToData) {
         int j = 0;
         while ((pos = currentLine.find(delimeter)) != std::string::npos && file) {//while we haven't reached endl
             token = currentLine.substr(0, pos);//take the next element
-            temporaryDataVector(j) = std::stod(token);//and put it in a vector
-            j++;//increment the counter
-            currentLine.erase(0, pos + delimeter.length());//delete the element from the string (not the vector)
+            if(classes[token]!=0)temporaryDataVector(numberOfFeatures)=classes[token];
+            else {
+                temporaryDataVector(j) = std::stod(token);
+                j++;
+            }
+            currentLine.erase(0, pos + delimeter.length());//delete the element from the string
         }
-        if (!classIndexIsFirst)temporaryDataVector(numberOfFeatures) = assignClassNumber(currentLine);
+
 
         dataMatrix.col(i) = temporaryDataVector;//put that feature vector in the data matrix
         std::getline(file, currentLine);//read in one line from the file containing the data
         i++;
     }
-    //std::cout << dataMatrix << std::endl;//print the matrix for debugging and stuff
+    std::cout << dataMatrix << std::endl;//print the matrix for debugging and stuff
 
     file.close();//close the file once it's all done
 }
 
-
-void DataHandler::setNumberOfClasses(int theNumberOfClasses) {
-    numberOfClasses = theNumberOfClasses;
-}
-
-void DataHandler::setNumberOfFeatures(int theNumberOfFeatures) {
-    numberOfFeatures = theNumberOfFeatures;
-}
-
-void DataHandler::setNumberOfSamples(int theNumberOfSamples) {
-    numberOfSamples = theNumberOfSamples;
-}
-
-
-void DataHandler::setParameters(int theNumberOfClasses, int theNumberOfFeatures, int theNumberOfSamples, std::string classIndex) {
-    setNumberOfClasses(theNumberOfClasses);
-    setNumberOfFeatures(theNumberOfFeatures);
-    setNumberOfSamples(theNumberOfSamples);
-    if(classIndex == "last") classIndexIsFirst = 0;
-    else{classIndexIsFirst = 1;}
-}
-
-int DataHandler::assignClassNumber(std::string classValue) {
-    //IRIS RULES
-    if(classValue.compare("Iris-setosa")==0) return 0;
-    else if(classValue.compare("Iris-versicolor")==0) return 1;
-    else if(classValue.compare("Iris-virginica")==0)return 2;
-
-    //To add another follow the same format and comment out any other data set rule.
-    else{return -1;}
-}
-
-Eigen::MatrixXd* DataHandler::getDataMatrix() {
-    return &dataMatrix;
+void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
+    std::cout<<pathToConfigFile<<std::endl;
+    std::ifstream file;
+    file.open(pathToConfigFile);
+    std::string currentLine, previousLine;
+    std::getline(file, currentLine);
+    if(currentLine.compare("Class names:")==0) {
+        std::getline(file,currentLine);
+        int j = 1;
+        while(currentLine.compare("stop here")!=0){
+            if(currentLine.compare(previousLine)==0){
+                std::cout<<"Infinite loop canceled in CLASS NAMES - use 'stop here' after every section.";
+                break;
+            }
+            classes[currentLine]=j;
+            j++;
+            previousLine = currentLine;
+            std::getline(file,currentLine);
+        }
+        std::getline(file,currentLine);
+    }
+    else{std::cout<<"Error retrieving class names. First line of configuration file should be 'Class names:'";}
+    if(currentLine.compare("Number of features:")==0){
+        std::getline(file,currentLine);
+        while(currentLine.compare("stop here")!=0) {
+            if(currentLine.compare(previousLine)==0){
+                std::cout<<"Infinite loop canceled in NUMBER OF FEATURES - use 'stop here' after every section.";
+                break;
+            }
+            numberOfFeatures = std::stod(currentLine);
+            std::cout<<"Number of features = "<<numberOfFeatures<<std::endl;
+            previousLine = currentLine;
+            std::getline(file, currentLine);
+        }
+        std::getline(file,currentLine);
+    }
+    else{ std::cout<<"Error retrieving number of features. See config file example for help.";}
+    if(currentLine.compare("Number of samples:")==0){
+        std::getline(file,currentLine);
+        while(currentLine.compare("stop here")!=0){
+            if(currentLine.compare(previousLine)==0){
+                std::cout<<"Infinite loop canceled in NUMBER OF SAMPLES - use 'stop here' after every section.";
+                break;
+            }
+            numberOfSamples = std::stod(currentLine);
+            std::cout<<"Number of samples = "<<numberOfSamples<<std::endl;
+            previousLine = currentLine;
+            std::getline(file,currentLine);
+        }
+        std::getline(file,currentLine);
+    }
+    else{ std::cout<<"Error retrieving number of samples. See config file example for help.";}
+    if(currentLine.compare("Class index:")==0){
+        std::getline(file,currentLine);
+        if(currentLine.compare("first")==0) classIndexIsFirst = 1;
+        else if(currentLine.compare("last")==0)classIndexIsFirst = 0;
+        else if(currentLine.compare("unsupervised")==0)classIndexIsFirst=2;//indicates we don't have class names
+        else{
+            classIndexIsFirst = -1;
+            std::cout<<"Please enter class index. See config file example for help.";
+        }
+        if(classIndexIsFirst != -1) {
+            std::cout << "Class index = " << currentLine << std::endl;
+            std::cout << "Successfully loaded configuration details."<<std::endl;
+        }
+    }
+    else{ std::cout<<"Error retrieving class index. See config file example for help.";}
+    file.close();
 }
