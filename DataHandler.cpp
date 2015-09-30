@@ -39,15 +39,21 @@ Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
     int i = 0;
     while (!file.eof() && !file.fail() && (currentLine.size() > 2)) {// check if file is open and make if at eof
         int j = 0;
+        int classAssigned = 0;
         while ((pos = currentLine.find(delimeter)) != std::string::npos && file) {//while we haven't reached endl
             token = currentLine.substr(0, pos);//take the next element
-            if(classes[token]!=0)temporaryDataVector(numberOfFeatures)=classes[token];
+            if(classIndexIsFirst&&classAssigned==0){
+                temporaryDataVector(numberOfFeatures)=classes[token];
+                classAssigned=1;
+            }
             else {
                 temporaryDataVector(j) = std::stod(token);
                 j++;
             }
             currentLine.erase(0, pos + delimeter.length());//delete the element from the string
         }
+        if(!classIndexIsFirst)temporaryDataVector(numberOfFeatures) = classes[currentLine];
+        else{temporaryDataVector(j)=std::stod(currentLine);}
 
 
         dataMatrix.col(i) = temporaryDataVector;//put that feature vector in the data matrix

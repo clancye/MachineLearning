@@ -8,7 +8,7 @@ int main() {
     Classifier classifier;
 
 
-    dataHandler.uploadData("/Users/clancyemanuel/Dropbox/UConn/semesters/semester_9/Neural Networks/Homework/Homework 2/wine.txt");
+    dataHandler.uploadData("/Users/clancyemanuel/Dropbox/UConn/semesters/semester_9/Neural Networks/Homework/Homework 2/iris.txt");
 
  //   Eigen::MatrixXd *dataMatrix;
  //   dataMatrix = uploader.getDataMatrix();
