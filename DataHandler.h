@@ -26,7 +26,7 @@ class DataHandler {
     private:
 
     std::map<std::string,int> classes;
-    Eigen::MatrixXd dataMatrix;
+    Eigen::MatrixXd dataMatrix, augmentedDataMatrix;
     Eigen::MatrixXd loadDataMatrix(std::string pathToData);
     int numberOfFeatures,numberOfSamples, classIndexIsFirst;
 };

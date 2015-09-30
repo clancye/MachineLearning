@@ -17,6 +17,7 @@ void DataHandler::uploadData(std::string pathToData) {
     pathToConfigFile.insert(pathToConfigFile.length()-4,"Config");
     getConfigurationDetails(pathToConfigFile);//sets general parameters
     loadDataMatrix(pathToData);
+
 }
 
 Eigen::MatrixXd* DataHandler::getDataMatrix() {
@@ -31,7 +32,7 @@ Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
     std::string token;
     std::string currentLine;
 
-    dataMatrix.resize(numberOfFeatures+1,numberOfSamples);
+    augmentedDataMatrix.resize(numberOfFeatures+1,numberOfSamples);
     Eigen::VectorXd temporaryDataVector;
     temporaryDataVector.resize(numberOfFeatures+1);
 
@@ -55,13 +56,15 @@ Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
         if(!classIndexIsFirst)temporaryDataVector(numberOfFeatures) = classes[currentLine];
         else{temporaryDataVector(j)=std::stod(currentLine);}
 
+           // std::cout<<temporaryDataVector<<std::endl;
 
-        dataMatrix.col(i) = temporaryDataVector;//put that feature vector in the data matrix
+        augmentedDataMatrix.col(i) = temporaryDataVector;//put that feature vector in the data matrix
         std::getline(file, currentLine);//read in one line from the file containing the data
         i++;
     }
-    std::cout << dataMatrix << std::endl;//print the matrix for debugging and stuff
-
+    //std::cout << augmentedDataMatrix.leftCols(210) << std::endl;//print the matrix for debugging and stuff
+    dataMatrix = augmentedDataMatrix.topRows(numberOfFeatures);
+    std::cout<<dataMatrix<<std::endl;
     file.close();//close the file once it's all done
 }
 
