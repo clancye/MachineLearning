@@ -5,5 +5,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(/usr/local/include)
 
-set(SOURCE_FILES main.cpp DataUpload.cpp DataUpload.h)
+set(SOURCE_FILES main.cpp DataHandler.cpp DataHandler.h Classifier.cpp Classifier.h)
 add_executable(Machine_Learning ${SOURCE_FILES})

@@ -3,8 +3,10 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/DataUpload.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/DataUpload.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Classifier.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Classifier.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/DataHandler.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/DataHandler.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
