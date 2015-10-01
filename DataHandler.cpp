@@ -26,7 +26,7 @@ Eigen::MatrixXd* DataHandler::getDataMatrix() {
 
 
 
-Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
+void DataHandler::loadDataMatrix(std::string pathToData) {
     std::ifstream file;
     file.open(pathToData);
     std::string delimeter = ",";
@@ -64,7 +64,7 @@ Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
         std::getline(file, currentLine);//read in one line from the file containing the data
         i++;
     }
-    std::cout << augmentedDataMatrix.leftCols(210) << std::endl;//print the matrix for debugging and stuff
+   // std::cout << augmentedDataMatrix.leftCols(210) << std::endl;//print the matrix for debugging and stuff
     dataMatrix = augmentedDataMatrix.topRows(numberOfFeatures);
     //std::cout<<dataMatrix<<std::endl;
     file.close();//close the file once it's all done
@@ -73,7 +73,13 @@ Eigen::MatrixXd DataHandler::loadDataMatrix(std::string pathToData) {
 void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
     std::cout<<pathToConfigFile<<std::endl;
     std::ifstream file;
-    file.open(pathToConfigFile);
+    try {
+        file.open(pathToConfigFile);
+    }
+    catch (int e)
+    {
+        std::cout<<"Cannot find config file in the same directory as data."<<std::endl;
+    }
     std::string currentLine, previousLine;
     std::getline(file, currentLine);
     if(currentLine.compare("Class names:")==0) {
@@ -141,14 +147,56 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
     file.close();
 }
 
-void DataHandler::calculateMeanVectors() {
-    Eigen::MatrixXd zeroVector = Eigen::MatrixXd::Zero(numberOfFeatures,1);
-    int classValue, classCounter[numberOfClasses];
-    for(int i = 0; i<numberOfClasses;i++) meanVectors.push_back(zeroVector);
+void DataHandler::calculateClassMeans() {
+    Eigen::MatrixXd zeroVector = Eigen::MatrixXd::Zero(numberOfFeatures,1);//initial mean vector
+    meanMatrix.resize(numberOfFeatures,numberOfClasses);
+    meanMatrix.setZero(numberOfFeatures,numberOfClasses);
+    int classValue;
+    std::vector<int>classCounter(numberOfClasses,0);
     for(int i = 0;i<numberOfSamples;i++) {
         classValue = augmentedDataMatrix(numberOfFeatures, i);
-        meanVectors[classValue] += dataMatrix.col(i);
+        meanMatrix.col(classValue) += dataMatrix.col(i);
         classCounter[classValue]++;
     }
-    for(int i = 0;i<numberOfClasses;i++){ std::cout<<meanVectors[i]<<std::endl;}
+
+    for(int i = 0;i<numberOfClasses;i++){
+        meanMatrix.col(i) = meanMatrix.col(i)/classCounter[i];
+    }
+    std::cout<<"Mean vectors:"<<std::endl<<meanMatrix<<std::endl;
+}
+
+void DataHandler::calculateClassCovariances() {
+    Eigen::MatrixXd copyOfDataMatrix;
+    Eigen::MatrixXd x,mu,tempVector, tempMatrix;
+    int classValue;
+    std::vector<int>classCounter(numberOfClasses,0);
+    Eigen::MatrixXd zeroMatrix = Eigen::MatrixXd::Zero(numberOfFeatures,numberOfFeatures);//covariance matrix size
+    std::vector<Eigen::MatrixXd> vectorOfCovariances(numberOfClasses,zeroMatrix);
+
+    for(int i = 0;i<numberOfClasses;i++) {
+        vectorOfCovariances.push_back(zeroMatrix);
+    }
+
+    x.resize(numberOfFeatures,1);
+    mu.resize(numberOfFeatures,1);
+    tempVector.resize(numberOfFeatures,1);
+
+
+    copyOfDataMatrix.resize(numberOfFeatures,numberOfSamples);
+    copyOfDataMatrix = dataMatrix;
+
+    std::cout<<"First covariance matrix:"<<vectorOfCovariances[0]<<std::endl;
+
+    for(int i = 0;i<numberOfSamples;i++){
+        classValue = augmentedDataMatrix(numberOfFeatures,i);
+        x = copyOfDataMatrix.col(i);
+        mu = meanMatrix.col(classValue);
+        tempVector = x-mu;
+        vectorOfCovariances[classValue] +=  (x-mu)*(x.transpose()-mu.transpose());
+        classCounter[classValue]++;
+    }
+    for(int i = 0;i<numberOfClasses;i++){
+        vectorOfCovariances[i] = vectorOfCovariances[i]/classCounter[i];
+    }
+    std::cout<<"Covariance matrix:"<<std::endl<<vectorOfCovariances[2]<<std::endl;
 }

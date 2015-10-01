@@ -22,7 +22,8 @@ class DataHandler {
     ///uploads data into vector format
     void uploadData(std::string pathToData);
     void getConfigurationDetails(std::string pathToConfigFile);
-    void calculateMeanVectors();
+    void calculateClassMeans();
+    void calculateClassCovariances();
     Eigen::MatrixXd* getDataMatrix();
     Eigen::MatrixXd* getClassAssignments();
 
@@ -31,8 +32,8 @@ class DataHandler {
 
     std::map<std::string,int> classes;
     std::vector<Eigen::VectorXd> meanVectors;
-    Eigen::MatrixXd dataMatrix, augmentedDataMatrix,classAssignments;
-    Eigen::MatrixXd loadDataMatrix(std::string pathToData);
+    Eigen::MatrixXd dataMatrix, augmentedDataMatrix,classAssignments, meanMatrix;
+    void loadDataMatrix(std::string pathToData);
     int numberOfFeatures,numberOfSamples, classIndexIsFirst, numberOfClasses;
 };
 

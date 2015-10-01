@@ -8,8 +8,9 @@ int main() {
     Classifier classifier;
     Eigen::MatrixXd *dataMatrix;
 
-    dataHandler.uploadData("/Users/clancyemanuel/Dropbox/UConn/semesters/semester_9/Neural Networks/Homework/Homework 2/image.txt");
-    dataHandler.calculateMeanVectors();
+    dataHandler.uploadData("/Users/clancyemanuel/Dropbox/UConn/semesters/semester_9/Neural Networks/Homework/Homework 2/iris.txt");
+    dataHandler.calculateClassMeans();
+    dataHandler.calculateClassCovariances();
     dataMatrix = dataHandler.getDataMatrix();
  //   Eigen::MatrixXd *dataMatrix;
  //   dataMatrix = uploader.getDataMatrix();
