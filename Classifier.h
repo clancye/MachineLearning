@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include "/usr/local/include/eigen3/Eigen/Eigen"
+#include "DataHandler.h"
+#include <cmath>
 
 class Classifier {
 
@@ -14,11 +16,14 @@ class Classifier {
 
     Classifier();
 
-    void useLDA(Eigen::MatrixXd *dataMatrix);
+    void LDA();
+    void setDataHandler(DataHandler *dataHandler);
 
 
     private:
-    Eigen::MatrixXd findClassMeans(Eigen::MatrixXd *dataMatrix);
+    DataHandler *dataHandler;
+
+    int calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd someMu, Eigen::MatrixXd someSigma, int aClassProb );
 
 };
 

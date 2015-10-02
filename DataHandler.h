@@ -24,15 +24,23 @@ class DataHandler {
     void getConfigurationDetails(std::string pathToConfigFile);
     void calculateClassMeans();
     void calculateClassCovariances();
+    void calculateClassProbabilities();
     Eigen::MatrixXd* getDataMatrix();
-    Eigen::MatrixXd* getClassAssignments();
+    Eigen::MatrixXd* getMeanMatrix();
+    Eigen::MatrixXd* getClassVector();
+    std::vector<Eigen::MatrixXd> getVectorOfCovariances();
+    std::vector<double> getClassProbabilities();
+    int getNumberOfClasses();
+    int getNumberOfFeatures();
+    int getNumberOfSamples();
 
 
     private:
 
     std::map<std::string,int> classes;
-    std::vector<Eigen::VectorXd> meanVectors;
-    Eigen::MatrixXd dataMatrix, augmentedDataMatrix,classAssignments, meanMatrix;
+    std::vector<Eigen::MatrixXd> vectorOfCovariances;
+    std::vector<double> vectorOfClassProbabilities;
+    Eigen::MatrixXd dataMatrix, augmentedDataMatrix, meanMatrix, classVector;
     void loadDataMatrix(std::string pathToData);
     int numberOfFeatures,numberOfSamples, classIndexIsFirst, numberOfClasses;
 };

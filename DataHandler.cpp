@@ -37,6 +37,7 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
     augmentedDataMatrix.resize(numberOfFeatures+1,numberOfSamples);
     Eigen::VectorXd temporaryDataVector;
     temporaryDataVector.resize(numberOfFeatures+1);
+    vectorOfClassProbabilities.resize(numberOfClasses);
 
     std::getline(file, currentLine);//read in one line from the file containing the data
     int i = 0;
@@ -46,7 +47,7 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
         while ((pos = currentLine.find(delimeter)) != std::string::npos && file) {//while we haven't reached endl
             token = currentLine.substr(0, pos);//take the next element
             if(classIndexIsFirst&&classAssigned==0){
-                temporaryDataVector(numberOfFeatures)=classes[token];
+                temporaryDataVector(numberOfFeatures)=classes[token];//assign the extra vector element as the class
                 classAssigned=1;
             }
             else {
@@ -57,16 +58,13 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
         }
         if(!classIndexIsFirst)temporaryDataVector(numberOfFeatures) = classes[currentLine];
         else{temporaryDataVector(j)=std::stod(currentLine);}
-
-           // std::cout<<temporaryDataVector<<std::endl;
-
         augmentedDataMatrix.col(i) = temporaryDataVector;//put that feature vector in the data matrix
         std::getline(file, currentLine);//read in one line from the file containing the data
         i++;
     }
-   // std::cout << augmentedDataMatrix.leftCols(210) << std::endl;//print the matrix for debugging and stuff
     dataMatrix = augmentedDataMatrix.topRows(numberOfFeatures);
-    //std::cout<<dataMatrix<<std::endl;
+    classVector = augmentedDataMatrix.bottomRows(1);
+
     file.close();//close the file once it's all done
 }
 
@@ -162,7 +160,7 @@ void DataHandler::calculateClassMeans() {
     for(int i = 0;i<numberOfClasses;i++){
         meanMatrix.col(i) = meanMatrix.col(i)/classCounter[i];
     }
-    std::cout<<"Mean vectors:"<<std::endl<<meanMatrix<<std::endl;
+   // std::cout<<"Mean vectors:"<<std::endl<<meanMatrix<<std::endl;
 }
 
 void DataHandler::calculateClassCovariances() {
@@ -171,7 +169,7 @@ void DataHandler::calculateClassCovariances() {
     int classValue;
     std::vector<int>classCounter(numberOfClasses,0);
     Eigen::MatrixXd zeroMatrix = Eigen::MatrixXd::Zero(numberOfFeatures,numberOfFeatures);//covariance matrix size
-    std::vector<Eigen::MatrixXd> vectorOfCovariances(numberOfClasses,zeroMatrix);
+    vectorOfCovariances.resize(numberOfClasses,zeroMatrix);
 
     for(int i = 0;i<numberOfClasses;i++) {
         vectorOfCovariances.push_back(zeroMatrix);
@@ -185,7 +183,7 @@ void DataHandler::calculateClassCovariances() {
     copyOfDataMatrix.resize(numberOfFeatures,numberOfSamples);
     copyOfDataMatrix = dataMatrix;
 
-    std::cout<<"First covariance matrix:"<<vectorOfCovariances[0]<<std::endl;
+    //std::cout<<"First covariance matrix:"<<vectorOfCovariances[0]<<std::endl;
 
     for(int i = 0;i<numberOfSamples;i++){
         classValue = augmentedDataMatrix(numberOfFeatures,i);
@@ -196,7 +194,48 @@ void DataHandler::calculateClassCovariances() {
         classCounter[classValue]++;
     }
     for(int i = 0;i<numberOfClasses;i++){
-        vectorOfCovariances[i] = vectorOfCovariances[i]/classCounter[i];
+        vectorOfCovariances[i] = vectorOfCovariances[i]/(classCounter[i]-1);
     }
-    std::cout<<"Covariance matrix:"<<std::endl<<vectorOfCovariances[2]<<std::endl;
+    //std::cout<<"Covariance matrix:"<<std::endl<<vectorOfCovariances[1]<<std::endl;
+}
+
+int DataHandler::getNumberOfSamples() {
+    return numberOfSamples;
+}
+
+int DataHandler::getNumberOfFeatures() {
+    return numberOfFeatures;
+}
+
+int DataHandler::getNumberOfClasses() {
+    return numberOfClasses;
+}
+
+Eigen::MatrixXd *DataHandler::getMeanMatrix() {
+    return &meanMatrix;
+}
+
+std::vector<Eigen::MatrixXd> DataHandler::getVectorOfCovariances() {
+    return vectorOfCovariances;
+}
+
+Eigen::MatrixXd *DataHandler::getClassVector() {
+    return &classVector;
+}
+
+std::vector<double> DataHandler::getClassProbabilities() {
+    return vectorOfClassProbabilities;
+}
+
+void DataHandler::calculateClassProbabilities() {
+    int classValue;
+    for(int i = 0;i<numberOfSamples;i++){
+        classValue = classVector(0,i);
+        vectorOfClassProbabilities[classValue]++;//tally the number of times a class occurs
+    }
+    for(int i = 0;i<numberOfClasses;i++){
+        vectorOfClassProbabilities[i] /= numberOfSamples;//divide by the total number of samples
+        std::cout<<vectorOfClassProbabilities[i]<<std::endl;
+    }
+
 }
