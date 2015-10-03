@@ -14,7 +14,7 @@ DataHandler::DataHandler() {
 void DataHandler::uploadData(std::string pathToData) {
     std::string pathToConfigFile;
     pathToConfigFile = pathToData;
-    pathToConfigFile.insert(pathToConfigFile.length()-4,"Config");
+    pathToConfigFile.insert(pathToConfigFile.length()-4,"Config");//make path to config file
     getConfigurationDetails(pathToConfigFile);//sets general parameters
     loadDataMatrix(pathToData);
 
@@ -39,9 +39,9 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
     temporaryDataVector.resize(numberOfFeatures+1);
     vectorOfClassProbabilities.resize(numberOfClasses);
 
-    std::getline(file, currentLine);//read in one line from the file containing the data
+    std::getline(file, currentLine);//read in one line of data (AKA one feature vector)
     int i = 0;
-    while (!file.eof() && !file.fail() && (currentLine.size() > 2)) {// check if file is open and make if at eof
+    while (!file.eof() && !file.fail() && (currentLine.size() > 2)) {// check if file is open and if at eof
         int j = 0;
         int classAssigned = 0;
         while ((pos = currentLine.find(delimeter)) != std::string::npos && file) {//while we haven't reached endl
@@ -80,7 +80,7 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
     }
     std::string currentLine, previousLine;
     std::getline(file, currentLine);
-    if(currentLine.compare("Class names:")==0) {
+    if(currentLine.compare("Class names:")==0) {//maps all of the class names to integers
         std::getline(file,currentLine);
         int j = 0;//class enumeration starts at 0
         while(currentLine.compare("stop here")!=0){
@@ -88,16 +88,16 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
                 std::cout<<"Infinite loop canceled in CLASS NAMES - use 'stop here' after every section.";
                 break;
             }
-            classes[currentLine]=j;//starts at one to
+            classes[currentLine]=j;
             j++;
             previousLine = currentLine;
             std::getline(file,currentLine);
         }
-        numberOfClasses = j;
+        numberOfClasses = j;// set numberOfClasses parameter
         std::getline(file,currentLine);
     }
     else{std::cout<<"Error retrieving class names. First line of configuration file should be 'Class names:'";}
-    if(currentLine.compare("Number of features:")==0){
+    if(currentLine.compare("Number of features:")==0){//Read config file for how many features per vector
         std::getline(file,currentLine);
         while(currentLine.compare("stop here")!=0) {
             if(currentLine.compare(previousLine)==0){
@@ -112,7 +112,7 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
         std::getline(file,currentLine);
     }
     else{ std::cout<<"Error retrieving number of features. See config file example for help.";}
-    if(currentLine.compare("Number of samples:")==0){
+    if(currentLine.compare("Number of samples:")==0){//Read config file for how many samples in data set
         std::getline(file,currentLine);
         while(currentLine.compare("stop here")!=0){
             if(currentLine.compare(previousLine)==0){
@@ -127,7 +127,7 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
         std::getline(file,currentLine);
     }
     else{ std::cout<<"Error retrieving number of samples. See config file example for help.";}
-    if(currentLine.compare("Class index:")==0){
+    if(currentLine.compare("Class index:")==0){//Indicates whether the class assignment is first or last in each vector
         std::getline(file,currentLine);
         if(currentLine.compare("first")==0) classIndexIsFirst = 1;
         else if(currentLine.compare("last")==0)classIndexIsFirst = 0;
@@ -235,7 +235,7 @@ void DataHandler::calculateClassProbabilities() {
     }
     for(int i = 0;i<numberOfClasses;i++){
         vectorOfClassProbabilities[i] /= numberOfSamples;//divide by the total number of samples
-        std::cout<<vectorOfClassProbabilities[i]<<std::endl;
+        std::cout<<"Class["<<i<<"] probability:"<<std::endl<<vectorOfClassProbabilities[i]<<std::endl;
     }
 
 }

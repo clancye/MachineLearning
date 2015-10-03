@@ -22,16 +22,27 @@ class DataHandler {
     ///uploads data into vector format
     void uploadData(std::string pathToData);
     void getConfigurationDetails(std::string pathToConfigFile);
+    ///Calculates the mean of the vectors in each class
     void calculateClassMeans();
+    ///Calculates the covariance of each class
     void calculateClassCovariances();
+    ///Calculates the probability of each class
     void calculateClassProbabilities();
+    ///Returns the address to dataMatrix
     Eigen::MatrixXd* getDataMatrix();
+    ///Returns the address to meanMatrix
     Eigen::MatrixXd* getMeanMatrix();
+    ///Returns address to classVector
     Eigen::MatrixXd* getClassVector();
+    ///Returns vector containing all the covariance matrices
     std::vector<Eigen::MatrixXd> getVectorOfCovariances();
+    ///Returns the vector containing the probabilities of each class
     std::vector<double> getClassProbabilities();
+    ///Returns the number of classes
     int getNumberOfClasses();
+    ///Returns the number of features
     int getNumberOfFeatures();
+    ///Returns the number of samples
     int getNumberOfSamples();
 
 

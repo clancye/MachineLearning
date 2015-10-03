@@ -23,7 +23,7 @@ class Classifier {
     private:
     DataHandler *dataHandler;
 
-    int calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd someMu, Eigen::MatrixXd someSigma, int aClassProb );
+    double calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd someMu, Eigen::MatrixXd someSigma, double aClassProb );
 
 };
 
