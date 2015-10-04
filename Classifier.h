@@ -6,9 +6,11 @@
 #define MACHINE_LEARNING_CLASSIFIER_H
 
 #include <iostream>
-#include "/usr/local/include/eigen3/Eigen/Eigen"
+#include <eigen3/Eigen/Eigen>
 #include "DataHandler.h"
 #include <cmath>
+#include <algorithm>
+#include <gnuplot-iostream/gnuplot-iostream.h>
 
 class Classifier {
 

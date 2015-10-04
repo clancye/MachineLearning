@@ -37,7 +37,6 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
     augmentedDataMatrix.resize(numberOfFeatures+1,numberOfSamples);
     Eigen::VectorXd temporaryDataVector;
     temporaryDataVector.resize(numberOfFeatures+1);
-    vectorOfClassProbabilities.resize(numberOfClasses);
 
     std::getline(file, currentLine);//read in one line of data (AKA one feature vector)
     int i = 0;
@@ -88,7 +87,7 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
                 std::cout<<"Infinite loop canceled in CLASS NAMES - use 'stop here' after every section.";
                 break;
             }
-            classes[currentLine]=j;
+            classes[currentLine]=j;//actual line that does the mapping
             j++;
             previousLine = currentLine;
             std::getline(file,currentLine);
@@ -152,51 +151,68 @@ void DataHandler::calculateClassMeans() {
     int classValue;
     std::vector<int>classCounter(numberOfClasses,0);
     for(int i = 0;i<numberOfSamples;i++) {
-        classValue = augmentedDataMatrix(numberOfFeatures, i);
+        classValue = augmentedDataMatrix(numberOfFeatures, i);//class value is stored in last row
         meanMatrix.col(classValue) += dataMatrix.col(i);
         classCounter[classValue]++;
     }
 
     for(int i = 0;i<numberOfClasses;i++){
-        meanMatrix.col(i) = meanMatrix.col(i)/classCounter[i];
+        meanMatrix.col(i) /= classCounter[i];
     }
-   // std::cout<<"Mean vectors:"<<std::endl<<meanMatrix<<std::endl;
 }
 
 void DataHandler::calculateClassCovariances() {
     Eigen::MatrixXd copyOfDataMatrix;
-    Eigen::MatrixXd x,mu,tempVector, tempMatrix;
+    Eigen::MatrixXd x,mu,error, tempMatrix;
     int classValue;
     std::vector<int>classCounter(numberOfClasses,0);
     Eigen::MatrixXd zeroMatrix = Eigen::MatrixXd::Zero(numberOfFeatures,numberOfFeatures);//covariance matrix size
+
     vectorOfCovariances.resize(numberOfClasses,zeroMatrix);
-
-    for(int i = 0;i<numberOfClasses;i++) {
-        vectorOfCovariances.push_back(zeroMatrix);
-    }
-
     x.resize(numberOfFeatures,1);
     mu.resize(numberOfFeatures,1);
-    tempVector.resize(numberOfFeatures,1);
+    error.resize(numberOfFeatures,1);
 
 
-    copyOfDataMatrix.resize(numberOfFeatures,numberOfSamples);
+    copyOfDataMatrix.resize(numberOfFeatures,numberOfSamples);//copying to make sure original is preserved
     copyOfDataMatrix = dataMatrix;
 
-    //std::cout<<"First covariance matrix:"<<vectorOfCovariances[0]<<std::endl;
 
     for(int i = 0;i<numberOfSamples;i++){
-        classValue = augmentedDataMatrix(numberOfFeatures,i);
+        classValue = augmentedDataMatrix(numberOfFeatures,i);//assigning double to int b/c class values are ints
         x = copyOfDataMatrix.col(i);
         mu = meanMatrix.col(classValue);
-        tempVector = x-mu;
-        vectorOfCovariances[classValue] +=  (x-mu)*(x.transpose()-mu.transpose());
+        error = x-mu;
+        vectorOfCovariances[classValue] +=  error*error.transpose();//outer product (dyad)
         classCounter[classValue]++;
     }
     for(int i = 0;i<numberOfClasses;i++){
-        vectorOfCovariances[i] = vectorOfCovariances[i]/(classCounter[i]-1);
+        vectorOfCovariances[i] /= (classCounter[i]-1);
     }
-    //std::cout<<"Covariance matrix:"<<std::endl<<vectorOfCovariances[1]<<std::endl;
+}
+
+void DataHandler::calculateClassProbabilities() {
+    int classValue;
+
+    vectorOfClassProbabilities.resize(numberOfClasses);
+
+    for(int i = 0;i<numberOfSamples;i++){
+        classValue = classVector(0,i);
+        vectorOfClassProbabilities[classValue]++;//tally the number of times a class occurs
+    }
+    for(int i = 0;i<numberOfClasses;i++){
+        vectorOfClassProbabilities[i] /= numberOfSamples;//divide by the total number of samples
+        std::cout<<"Class["<<i<<"] probability:"<<std::endl<<vectorOfClassProbabilities[i]<<std::endl;
+    }
+
+}
+
+void DataHandler::calculateMLCovariance() {
+    optimalMLCovariance.resize(numberOfFeatures,numberOfFeatures);
+    for(int i = 0;i<numberOfClasses;i++){
+        optimalMLCovariance += vectorOfCovariances[i];
+    }
+    optimalMLCovariance /= (numberOfSamples-numberOfClasses);
 }
 
 int DataHandler::getNumberOfSamples() {
@@ -227,15 +243,6 @@ std::vector<double> DataHandler::getClassProbabilities() {
     return vectorOfClassProbabilities;
 }
 
-void DataHandler::calculateClassProbabilities() {
-    int classValue;
-    for(int i = 0;i<numberOfSamples;i++){
-        classValue = classVector(0,i);
-        vectorOfClassProbabilities[classValue]++;//tally the number of times a class occurs
-    }
-    for(int i = 0;i<numberOfClasses;i++){
-        vectorOfClassProbabilities[i] /= numberOfSamples;//divide by the total number of samples
-        std::cout<<"Class["<<i<<"] probability:"<<std::endl<<vectorOfClassProbabilities[i]<<std::endl;
-    }
-
+Eigen::MatrixXd *DataHandler::getOptimalMLCovariance() {
+    return &optimalMLCovariance;
 }

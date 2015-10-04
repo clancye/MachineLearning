@@ -10,7 +10,7 @@
 #include<fstream>
 #include<map>
 #include<vector>
-#include "/usr/local/include/eigen3/Eigen/Eigen"
+#include <eigen3/Eigen/Eigen>
 
 
 ///Uploads data into vector format and indicates parameter values
@@ -28,12 +28,16 @@ class DataHandler {
     void calculateClassCovariances();
     ///Calculates the probability of each class
     void calculateClassProbabilities();
+    ///Calculates the optimal ML estimate of covariance over all classes
+    void calculateMLCovariance();
     ///Returns the address to dataMatrix
     Eigen::MatrixXd* getDataMatrix();
     ///Returns the address to meanMatrix
     Eigen::MatrixXd* getMeanMatrix();
     ///Returns address to classVector
     Eigen::MatrixXd* getClassVector();
+    ///Returns address to optimalMLCovariance
+    Eigen::MatrixXd* getOptimalMLCovariance();
     ///Returns vector containing all the covariance matrices
     std::vector<Eigen::MatrixXd> getVectorOfCovariances();
     ///Returns the vector containing the probabilities of each class
@@ -51,7 +55,7 @@ class DataHandler {
     std::map<std::string,int> classes;
     std::vector<Eigen::MatrixXd> vectorOfCovariances;
     std::vector<double> vectorOfClassProbabilities;
-    Eigen::MatrixXd dataMatrix, augmentedDataMatrix, meanMatrix, classVector;
+    Eigen::MatrixXd dataMatrix, augmentedDataMatrix, meanMatrix, classVector, optimalMLCovariance;
     void loadDataMatrix(std::string pathToData);
     int numberOfFeatures,numberOfSamples, classIndexIsFirst, numberOfClasses;
 };
