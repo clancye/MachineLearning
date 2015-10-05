@@ -29,7 +29,7 @@ void Classifier::LDA() {
     optimalMLCovariance = dataHandler->getOptimalMLCovariance();
     for(int i = 0;i<numberOfSamples;i++){//iterate through all samples
         for (int j = 0;j < numberOfClasses;j++) {//calculate the discriminant for every class and take max
-            g = calculateDiscriminant(dataMatrix->col(i), meanMatrix->col(j), vectorOfCovariances[j], classProbabilities[j]);
+            g = calculateDiscriminant(dataMatrix->row(i), meanMatrix->row(j), vectorOfCovariances[j], classProbabilities[j]);
             if(g>gmax)
             {
                 gmax = g;
@@ -37,7 +37,7 @@ void Classifier::LDA() {
             }
         }
         gmax = 0;
-        if(classAssignment == (classVector->col(i))(0)) numberOfCorrectAssignments++;
+        if(classAssignment == (classVector->row(i))(0)) numberOfCorrectAssignments++;
     }
     double percentageCorrect = (1.0*numberOfCorrectAssignments)/(1.0*numberOfSamples);//multiply by 1.0 to get doubles
     std::cout<<"Percentage correct = "<< percentageCorrect<<std::endl;
@@ -61,10 +61,10 @@ double Classifier::calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd 
     Sigma.resize(numberOfFeatures,numberOfFeatures);
     SigmaInv.resize(numberOfFeatures, numberOfFeatures);
 
-    x = someX;
-    xT = x.transpose();
-    mu = someMu;
-    muT = mu.transpose();
+    x = someX.transpose();//this transpose is to keep consistency while using the statistical equations
+    xT = someX;
+    mu = someMu.transpose();
+    muT = someMu;
     Sigma = someSigma;
     SigmaInv = Sigma.inverse();
     SigmaDet = Sigma.determinant();

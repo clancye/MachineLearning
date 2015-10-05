@@ -34,7 +34,7 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
     std::string token;
     std::string currentLine;
 
-    augmentedDataMatrix.resize(numberOfFeatures+1,numberOfSamples);
+    augmentedDataMatrix.resize(numberOfSamples,numberOfFeatures+1);
     Eigen::VectorXd temporaryDataVector;
     temporaryDataVector.resize(numberOfFeatures+1);
 
@@ -44,7 +44,7 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
         int j = 0;
         int classAssigned = 0;
         while ((pos = currentLine.find(delimeter)) != std::string::npos && file) {//while we haven't reached endl
-            token = currentLine.substr(0, pos);//take the next element
+            token = currentLine.substr(0, pos);//take the next element as indicated by the delimeter
             if(classIndexIsFirst&&classAssigned==0){
                 temporaryDataVector(numberOfFeatures)=classes[token];//assign the extra vector element as the class
                 classAssigned=1;
@@ -57,12 +57,12 @@ void DataHandler::loadDataMatrix(std::string pathToData) {
         }
         if(!classIndexIsFirst)temporaryDataVector(numberOfFeatures) = classes[currentLine];
         else{temporaryDataVector(j)=std::stod(currentLine);}
-        augmentedDataMatrix.col(i) = temporaryDataVector;//put that feature vector in the data matrix
+        augmentedDataMatrix.row(i) = temporaryDataVector;//put that feature vector in the data matrix
         std::getline(file, currentLine);//read in one line from the file containing the data
         i++;
     }
-    dataMatrix = augmentedDataMatrix.topRows(numberOfFeatures);
-    classVector = augmentedDataMatrix.bottomRows(1);
+    dataMatrix = augmentedDataMatrix.leftCols(numberOfFeatures);
+    classVector = augmentedDataMatrix.rightCols(1);
 
     file.close();//close the file once it's all done
 }
@@ -145,19 +145,19 @@ void DataHandler::getConfigurationDetails(std::string pathToConfigFile) {
 }
 
 void DataHandler::calculateClassMeans() {
-    Eigen::MatrixXd zeroVector = Eigen::MatrixXd::Zero(numberOfFeatures,1);//initial mean vector
-    meanMatrix.resize(numberOfFeatures,numberOfClasses);
-    meanMatrix.setZero(numberOfFeatures,numberOfClasses);
+    Eigen::MatrixXd zeroVector = Eigen::MatrixXd::Zero(1, numberOfFeatures);//initial mean vector
+    meanMatrix.resize(numberOfClasses, numberOfFeatures);
+    meanMatrix.setZero(numberOfClasses, numberOfFeatures);
     int classValue;
     std::vector<int>classCounter(numberOfClasses,0);
     for(int i = 0;i<numberOfSamples;i++) {
-        classValue = augmentedDataMatrix(numberOfFeatures, i);//class value is stored in last row
-        meanMatrix.col(classValue) += dataMatrix.col(i);
+        classValue = augmentedDataMatrix(i, numberOfFeatures);//class value is stored in last row
+        meanMatrix.row(classValue) += dataMatrix.row(i);
         classCounter[classValue]++;
     }
 
     for(int i = 0;i<numberOfClasses;i++){
-        meanMatrix.col(i) /= classCounter[i];
+        meanMatrix.row(i) /= classCounter[i];
     }
 }
 
@@ -169,25 +169,25 @@ void DataHandler::calculateClassCovariances() {
     Eigen::MatrixXd zeroMatrix = Eigen::MatrixXd::Zero(numberOfFeatures,numberOfFeatures);//covariance matrix size
 
     vectorOfCovariances.resize(numberOfClasses,zeroMatrix);
-    x.resize(numberOfFeatures,1);
-    mu.resize(numberOfFeatures,1);
+    x.resize(1, numberOfFeatures);
+    mu.resize(1, numberOfFeatures);
     error.resize(numberOfFeatures,1);
 
 
-    copyOfDataMatrix.resize(numberOfFeatures,numberOfSamples);//copying to make sure original is preserved
+    copyOfDataMatrix.resize(numberOfSamples, numberOfFeatures);//copying to make sure original is preserved
     copyOfDataMatrix = dataMatrix;
 
 
     for(int i = 0;i<numberOfSamples;i++){
-        classValue = augmentedDataMatrix(numberOfFeatures,i);//assigning double to int b/c class values are ints
-        x = copyOfDataMatrix.col(i);
-        mu = meanMatrix.col(classValue);
-        error = x-mu;
+        classValue = augmentedDataMatrix(i, numberOfFeatures);//assigning double to int b/c class values are ints
+        x = copyOfDataMatrix.row(i);
+        mu = meanMatrix.row(classValue);
+        error = (x-mu).transpose();// take transpose because x and mu are row vectors
         vectorOfCovariances[classValue] +=  error*error.transpose();//outer product (dyad)
         classCounter[classValue]++;
     }
     for(int i = 0;i<numberOfClasses;i++){
-        vectorOfCovariances[i] /= (classCounter[i]-1);
+        vectorOfCovariances[i] /= (classCounter[i]-1);// -1 for unbiased estimator
     }
 }
 
@@ -197,7 +197,7 @@ void DataHandler::calculateClassProbabilities() {
     vectorOfClassProbabilities.resize(numberOfClasses);
 
     for(int i = 0;i<numberOfSamples;i++){
-        classValue = classVector(0,i);
+        classValue = classVector(i,0);
         vectorOfClassProbabilities[classValue]++;//tally the number of times a class occurs
     }
     for(int i = 0;i<numberOfClasses;i++){
