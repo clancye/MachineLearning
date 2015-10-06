@@ -48,7 +48,7 @@ void Classifier::setDataHandler(DataHandler *aDataHandler) {
     dataHandler = aDataHandler;
 }
 
-double Classifier::calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd someMu, Eigen::MatrixXd someSigma, double aClassProb ) {
+double Classifier::calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd someMu, Eigen::MatrixXd someSigma, double aClassProb )  {
     int numberOfFeatures;
     double g, P, SigmaDet;
     Eigen::MatrixXd x,xT,mu,muT,Sigma, SigmaInv;

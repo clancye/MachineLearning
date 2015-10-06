@@ -5,8 +5,12 @@
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Classifier.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Classifier.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/DataGenerator.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/DataGenerator.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/DataHandler.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/DataHandler.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Histogram.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Histogram.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
