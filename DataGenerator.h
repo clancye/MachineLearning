@@ -7,6 +7,7 @@
 
 #include <eigen3/Eigen/Eigen>
 #include <random>
+#include <iostream>
 
 class DataGenerator {
 
@@ -14,7 +15,7 @@ class DataGenerator {
     DataGenerator();
 
     double randomGaussianNumber(double aMean, double aVariance);
-    double randomGaussianVector(Eigen::MatrixXd aMeanVector, Eigen::MatrixXd aCovariance);
+    Eigen::MatrixXd randomGaussianVector(Eigen::MatrixXd aMeanVector, Eigen::MatrixXd aCovariance);
     Eigen::MatrixXd randomGaussianVectors(int aNumberOfVectors, Eigen::MatrixXd aMeanVector, Eigen::MatrixXd aCovariance);
 
 };

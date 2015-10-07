@@ -18,8 +18,40 @@ double DataGenerator::randomGaussianNumber(double aMean, double aVariance) {
     return randomNumber;
 }
 
-double DataGenerator::randomGaussianVector(Eigen::MatrixXd aMeanVector, Eigen::MatrixXd aCovariance) {
-    return 0;
+Eigen::MatrixXd DataGenerator::randomGaussianVector(Eigen::MatrixXd aMeanVector, Eigen::MatrixXd aCovariance) {
+    Eigen::EigenSolver<Eigen::MatrixXd> eigenSolver;
+    Eigen::MatrixXcd Q, sqrtLambda, eigenValuesVector, matrixCoefficient;
+    Eigen::MatrixXd aRandomVector, mu, r,y, realMatrixCoefficient;
+    int vectorSize, rows, cols;
+
+    mu = aMeanVector;
+    vectorSize = mu.rows();
+    r.resize(vectorSize,1);
+    y.resize(vectorSize,1);
+
+    eigenSolver.compute(aCovariance, true);
+    Q = eigenSolver.eigenvectors();
+    eigenValuesVector = eigenSolver.eigenvalues();
+    eigenValuesVector = eigenValuesVector.array().sqrt();
+    sqrtLambda = eigenValuesVector.asDiagonal();
+
+    for(int i = 0;i<vectorSize;i++){
+        r(i,0) =  randomGaussianNumber(0,1);
+    }
+
+    matrixCoefficient = Q*sqrtLambda;
+    rows = matrixCoefficient.rows();
+    cols = matrixCoefficient.cols();
+    realMatrixCoefficient.resize(rows,cols);
+    for(int i = 0;i<rows;i++){
+        for(int j = 0;j<cols;j++){
+            realMatrixCoefficient(i,j) = std::real(matrixCoefficient(i,j));
+        }
+    }
+    y = realMatrixCoefficient*r+mu;
+
+
+    return y;
 }
 
 Eigen::MatrixXd DataGenerator::randomGaussianVectors(int aNumberOfVectors, Eigen::MatrixXd aMeanVector,

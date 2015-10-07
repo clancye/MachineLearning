@@ -33,11 +33,11 @@ class DataHandler {
     ///Returns the address to dataMatrix
     Eigen::MatrixXd* getDataMatrix();
     ///Returns the address to meanMatrix
-    Eigen::MatrixXd* getMeanMatrix();
+    Eigen::MatrixXd getMeanMatrix();
     ///Returns address to classVector
-    Eigen::MatrixXd* getClassVector();
+    Eigen::MatrixXd getClassVector();
     ///Returns address to optimalMLCovariance
-    Eigen::MatrixXd* getOptimalMLCovariance();
+    Eigen::MatrixXd getOptimalMLCovariance();
     ///Returns vector containing all the covariance matrices
     std::vector<Eigen::MatrixXd> getVectorOfCovariances();
     ///Returns the vector containing the probabilities of each class

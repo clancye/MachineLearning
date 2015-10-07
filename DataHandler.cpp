@@ -208,7 +208,7 @@ void DataHandler::calculateClassProbabilities() {
 }
 
 void DataHandler::calculateMLCovariance() {
-    optimalMLCovariance.resize(numberOfFeatures,numberOfFeatures);
+    optimalMLCovariance = Eigen::MatrixXd::Zero(numberOfFeatures,numberOfFeatures);
     for(int i = 0;i<numberOfClasses;i++){
         optimalMLCovariance += vectorOfCovariances[i];
     }
@@ -227,22 +227,22 @@ int DataHandler::getNumberOfClasses() {
     return numberOfClasses;
 }
 
-Eigen::MatrixXd *DataHandler::getMeanMatrix() {
-    return &meanMatrix;
+Eigen::MatrixXd DataHandler::getMeanMatrix() {
+    return meanMatrix;
 }
 
 std::vector<Eigen::MatrixXd> DataHandler::getVectorOfCovariances() {
     return vectorOfCovariances;
 }
 
-Eigen::MatrixXd *DataHandler::getClassVector() {
-    return &classVector;
+Eigen::MatrixXd DataHandler::getClassVector() {
+    return classVector;
 }
 
 std::vector<double> DataHandler::getClassProbabilities() {
     return vectorOfClassProbabilities;
 }
 
-Eigen::MatrixXd *DataHandler::getOptimalMLCovariance() {
-    return &optimalMLCovariance;
+Eigen::MatrixXd DataHandler::getOptimalMLCovariance() {
+    return optimalMLCovariance;
 }

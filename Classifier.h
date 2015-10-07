@@ -18,14 +18,14 @@ class Classifier {
 
     Classifier();
 
-    void LDA();
+    void DiscriminantAnalysis(int aQDA);
     void setDataHandler(DataHandler *dataHandler);
 
 
     private:
     DataHandler *dataHandler;
 
-    double calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd someMu, Eigen::MatrixXd someSigma, double aClassProb );
+    double calculateDiscriminant(Eigen::MatrixXd someX, Eigen::MatrixXd someMu, Eigen::MatrixXd someSigma, double aClassProb, int QDA);
 
 };
 
