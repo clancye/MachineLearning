@@ -12,6 +12,6 @@ endif()
 
 include_directories(/usr/local/include)
 
-set(SOURCE_FILES main.cpp DataHandler.cpp DataHandler.h Classifier.cpp Classifier.h DataGenerator.cpp DataGenerator.h Histogram.cpp Histogram.h)
+set(SOURCE_FILES main.cpp DataHandler.cpp DataHandler.h Classifier.cpp Classifier.h DataGenerator.cpp DataGenerator.h Histogram.cpp Histogram.h Statistics/BetaDistribution.cpp Statistics/BetaDistribution.h)
 add_executable(Machine_Learning ${SOURCE_FILES})
 target_link_libraries(Machine_Learning ${Boost_LIBRARIES})

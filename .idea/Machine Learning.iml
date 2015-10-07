@@ -11,6 +11,8 @@
       <sourceFolder url="file://$MODULE_DIR$/DataHandler.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Histogram.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Histogram.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Statistics/BetaDistribution.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Statistics/BetaDistribution.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -58,3 +58,23 @@ Eigen::MatrixXd DataGenerator::randomGaussianVectors(int aNumberOfVectors, Eigen
                                                      Eigen::MatrixXd aCovariance) {
     return aMeanVector;
 }
+
+double DataGenerator::randomUniformNumber(double min, double max) {
+    std::random_device randomDevice{};
+    std::mt19937 engine{randomDevice()};
+    std::uniform_real_distribution<double> uniformRealDistribution(min,max);
+
+    return uniformRealDistribution(engine);
+}
+
+Eigen::MatrixXd DataGenerator::randomUniformVector(int aSize, double aMin, double aMax) {
+    const int size = aSize;
+    Eigen::MatrixXd randomVector;
+
+    randomVector.resize(aSize,1);
+
+    for(int i = 0;i<size;i++){
+        randomVector(i,0) = randomUniformNumber(aMin,aMax);
+    }
+    return randomVector;
+}

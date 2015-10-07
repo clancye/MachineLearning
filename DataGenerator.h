@@ -15,6 +15,8 @@ class DataGenerator {
     DataGenerator();
 
     double randomGaussianNumber(double aMean, double aVariance);
+    double randomUniformNumber(double min, double max);
+    Eigen::MatrixXd randomUniformVector(int aSize, double aMin, double aMax);
     Eigen::MatrixXd randomGaussianVector(Eigen::MatrixXd aMeanVector, Eigen::MatrixXd aCovariance);
     Eigen::MatrixXd randomGaussianVectors(int aNumberOfVectors, Eigen::MatrixXd aMeanVector, Eigen::MatrixXd aCovariance);
 

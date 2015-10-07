@@ -3,6 +3,7 @@
 #include "Classifier.h"
 #include "DataGenerator.h"
 #include "Histogram.h"
+#include "Statistics/BetaDistribution.h"
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
@@ -10,9 +11,10 @@ int main() {
     Classifier classifier;
     DataGenerator dataGenerator;
     Histogram histogram;
+    BetaDistribution betaDistribution;
     Eigen::MatrixXd *dataMatrix;
 
-    dataHandler.uploadData("/Users/clancyemanuel/Dropbox/UConn/semesters/semester_9/Neural Networks/Homework/Homework 2/wine.txt");
+    dataHandler.uploadData("/Users/clancyemanuel/Dropbox/UConn/semesters/semester_9/Neural Networks/Homework/Homework 2/iris.txt");
     dataHandler.calculateClassMeans();
     dataHandler.calculateClassCovariances();
     dataHandler.calculateClassProbabilities();
@@ -20,6 +22,10 @@ int main() {
     classifier.setDataHandler(&dataHandler);
     classifier.DiscriminantAnalysis(0);
 
+    betaDistribution.calculateHyperParameters(.7,.04);
+    std::vector<double> params = betaDistribution.getHyperParameters();
+
+    std::cout<<"a = "<<params[0]<<std::endl<<"b = "<<params[1]<<std::endl;
 
 
 /*
